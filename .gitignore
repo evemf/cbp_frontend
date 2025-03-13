@@ -1,23 +1,44 @@
+# Sistema operativo
 .DS_Store
-node_modules
+Thumbs.db
+
+# Módulos de Node
+node_modules/
+
+# Salidas de compilación
 /dist
+/build
 
-
-# local env files
+# Archivos de entorno
 .env.local
 .env.*.local
+.env
 
-# Log files
+# Logs y archivos temporales
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+logs/
+*.log
 
-# Editor directories and files
-.idea
-.vscode
+# Caché y directorios temporales
+/.cache
+/.vite
+/.nuxt
+/.output
+
+# Directorios de cobertura de tests
+coverage/
+
+# Configuración del editor/IDE
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Otros
+.DS_Store?
