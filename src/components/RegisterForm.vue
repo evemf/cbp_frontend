@@ -12,13 +12,6 @@
                   :rules="[rules.required, rules.email]"
                   required
                 />
-                <v-text-field
-                  v-model="password"
-                  label="Password"
-                  :rules="[rules.required]"
-                  type="password"
-                  required
-                />
                 <v-btn :disabled="!valid" @click="register" color="primary" block>
                   Register
                 </v-btn>
@@ -35,7 +28,6 @@
     data() {
       return {
         email: '',
-        password: '',
         valid: false,
         rules: {
           required: value => !!value || 'This field is required',
@@ -45,8 +37,7 @@
     },
     methods: {
       async register() {
-        const userData = { email: this.email, password: this.password };
-        await this.$store.dispatch('register', userData);
+        await this.$store.dispatch('register', this.email);
       },
     },
   };

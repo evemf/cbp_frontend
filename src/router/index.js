@@ -1,12 +1,14 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+import VerifyEmail from '@/components/VerifyEmail.vue';
+import CompleteProfile from '@/views/CompleteProfile.vue';
 import HomePage from "../views/HomePage.vue";
 import AuthPage from "../views/AuthPage.vue";
 import RankingPage from "../views/RankingPage.vue";
 import CompetitionPage from "../views/CompetitionPage.vue"; 
 import ReservationPage from "../views/ReservationPage.vue"; 
 import DashboardPage from "../views/DashboardPage.vue";
-import RoomsPage from "../views/RoomsPage.vue";  // Asegúrate de que este componente exista
+import RoomsPage from "../views/RoomsPage.vue";  
 
 const routes = [
   {
@@ -25,12 +27,12 @@ const routes = [
     component: CompetitionPage,
   },
   {
-    path: "/rankings",   // Ajustado a plural para que coincida con la navegación
+    path: "/rankings",
     name: "Ranking",
     component: RankingPage,
   },
   {
-    path: "/rooms",      // Agregada la ruta para "/rooms"
+    path: "/rooms",      
     name: "Rooms",
     component: RoomsPage,
   },
@@ -45,6 +47,18 @@ const routes = [
     component: DashboardPage,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/auth/verify/:token',
+    name: 'verify-email',
+    component: VerifyEmail,
+    props: true 
+  },
+  { 
+    path: '/complete-profile',
+    name: 'CompleteProfile',
+    component: CompleteProfile,
+    props: route => ({ email: route.query.token })
+  }
 ];
 
 const router = createRouter({
