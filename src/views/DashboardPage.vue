@@ -1,10 +1,14 @@
 <template>
   <div class="dashboard-container">
     <h1>Bienvenido, {{ user?.first_name || "Usuario" }}!</h1>
-    
+
     <div v-if="user" class="profile-card">
-      <img :src="user.avatar || defaultAvatar" alt="Profile Image" class="profile-img" />
-      
+      <img
+        :src="user.avatar || getDefaultAvatar(user.gender)"
+        alt="Profile Image"
+        class="profile-img"
+      />
+
       <div class="profile-info">
         <h2>{{ user.first_name }} {{ user.last_name }}</h2>
         <p><strong>Email:</strong> {{ user.email }}</p>
@@ -20,9 +24,10 @@
         </p>
       </div>
 
-      <div class="profile-actions">
-        <button @click="goToEditProfile">Editar Perfil</button>
-        <button class="logout-btn" @click="logout">Cerrar Sesión</button>
+      <!-- Input para subir imagen -->
+      <div class="upload-container">
+        <label for="fileInput" class="upload-label">Subir imagen</label>
+        <input type="file" id="fileInput" @change="uploadImage" />
       </div>
     </div>
 
@@ -32,14 +37,12 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import avatarMale from "@/assets/avatar-male.png";
+import avatarFemale from "@/assets/avatar-female.png";
+import avatarDefault from "@/assets/avatar-default.png";
 
 export default {
   name: "DashboardPage",
-  data() {
-    return {
-      defaultAvatar: "https://via.placeholder.com/100", // Imagen por defecto
-    };
-  },
   computed: {
     ...mapGetters(["getUser"]),
     user() {
@@ -47,19 +50,33 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["fetchUser", "logout"]),
+    ...mapActions(["fetchUser", "uploadAvatar"]),
     formatDate(date) {
       if (!date) return "No especificado";
       return new Date(date).toLocaleDateString("es-ES");
     },
-    goToEditProfile() {
-      this.$router.push("/edit-profile");
+    getDefaultAvatar(gender) {
+      if (gender === "male") return avatarMale;
+      if (gender === "female") return avatarFemale;
+      return avatarDefault;
+    },
+    async uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      try {
+        await this.uploadAvatar(formData);
+        await this.fetchUser(); // Recargar datos del usuario después de la subida
+      } catch (error) {
+        console.error("Error al subir la imagen:", error);
+      }
     },
   },
-  created() {
-    if (!this.user || !this.user.email) {
-      this.fetchUser();
-    }
+  async created() {
+    await this.fetchUser();
   },
 };
 </script>
@@ -92,10 +109,6 @@ export default {
   text-align: center;
 }
 
-.profile-info p {
-  margin: 5px 0;
-}
-
 .verified {
   color: green;
   font-weight: bold;
@@ -106,30 +119,25 @@ export default {
   font-weight: bold;
 }
 
-.profile-actions {
-  display: flex;
-  justify-content: space-between;
+.upload-container {
+  text-align: center;
   margin-top: 15px;
 }
 
-.profile-actions button {
+.upload-label {
+  display: block;
   background-color: #007bff;
   color: white;
-  border: none;
   padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.profile-actions button:hover {
+.upload-label:hover {
   background-color: #0056b3;
 }
 
-.logout-btn {
-  background-color: red;
-}
-
-.logout-btn:hover {
-  background-color: darkred;
+#fileInput {
+  display: none;
 }
 </style>
