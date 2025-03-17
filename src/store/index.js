@@ -49,40 +49,39 @@ const store = createStore({
     
     async completeProfile(_, profileData) {
       try {
-        const token = new URLSearchParams(window.location.search).get("token"); 
-        console.log("Token from URL:", token); 
-        if (!token) throw new Error("Missing verification token.");
-    
-        const response = await api.post('http://127.0.0.1:8000/auth/complete-profile', profileData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });        
+        const response = await api.put('/users/complete-profile', profileData, {
+          withCredentials: true,
+        });
     
         if (response.status === 200) {
-          alert('Your profile is now complete!');
+          alert('¡Tu perfil ha sido completado exitosamente!');
           router.push({ name: 'Auth' }); 
         }
       } catch (error) {
-        console.error('Profile completion failed:', error);
-        alert(error.response?.data?.detail || 'Profile completion failed!');
+        console.error('Error al completar perfil:', error);
+        alert(error.response?.data?.detail || 'Hubo un problema al completar el perfil.');
       }
     },
 
     // Login
     async login({ commit }, credentials) {
       try {
-        const response = await api.post('/auth/login', credentials);
-        const { access_token } = response.data;
+        const response = await api.post('/auth/login', credentials, {
+          withCredentials: true,
+        });
+
+        const { access_token, redirect_url } = response.data;  // Extraemos la URL de redirección
 
         commit('setToken', access_token);
 
         // Obtener datos del usuario después del login
-        const userResponse = await api.get('/auth/me', {
-          headers: { Authorization: `Bearer ${access_token}` }
-        });
+        const userResponse = await api.get('/auth/me', { withCredentials: true });
 
         commit('setUser', userResponse.data);
 
-        router.push({ name: 'dashboard' }); // Redirigir al dashboard
+        // Redirigir al dashboard usando la URL proporcionada por el backend
+        console.log('Redirigiendo a:', redirect_url);
+        window.location.href = redirect_url; // Redirige a la URL que el backend devuelve
       } catch (error) {
         console.error('Login failed:', error);
         alert(error.response?.data?.detail || 'Invalid email or password!');

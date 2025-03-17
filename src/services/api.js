@@ -1,9 +1,10 @@
 import axios from "axios";
 
 // Crear una instancia de axios
-console.log("API URL:", process.env.VUE_APP_API_URL);
+const apiUrl = process.env.VUE_APP_API_URL;
+
 const api = axios.create({
-  baseURL:  process.env.VUE_APP_API_URL, 
+  baseURL:  apiUrl, 
   headers: {
     "Content-Type": "application/json",  // Indicamos que las solicitudes son JSON
   },

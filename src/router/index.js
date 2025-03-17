@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import VerifyEmail from '@/components/VerifyEmail.vue';
 import CompleteProfile from '@/views/CompleteProfile.vue';
@@ -44,25 +43,24 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    component: DashboardPage,
     meta: { requiresAuth: true },
+    component: DashboardPage,
   },
   {
     path: '/auth/verify/:token',
     name: 'verify-email',
     component: VerifyEmail,
-    props: true 
+    props: true
   },
   { 
     path: '/complete-profile',
     name: 'CompleteProfile',
     component: CompleteProfile,
-    props: route => ({ email: route.query.token })
   }
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 });
 
