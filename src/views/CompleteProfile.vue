@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Completar Perfil</h1>
+    <h1 class="title">Completar Perfil</h1>
     <form @submit.prevent="completeProfile">
       <div class="form-group">
         <label>Email</label>
@@ -8,19 +8,19 @@
       </div>
       <div class="form-group">
         <label>Nombre</label>
-        <input v-model="firstName" type="text" required />
+        <input v-model="firstName" type="text" required class="input" />
       </div>
       <div class="form-group">
         <label>Apellido</label>
-        <input v-model="lastName" type="text" required />
+        <input v-model="lastName" type="text" required class="input" />
       </div>
       <div class="form-group">
         <label>Fecha de Nacimiento</label>
-        <input v-model="birthDate" type="date" required />
+        <input v-model="birthDate" type="date" required class="input" />
       </div>
       <div class="form-group">
         <label>Género</label>
-        <select v-model="gender" required>
+        <select v-model="gender" required class="input">
           <option disabled value="">Seleccione una opción</option>
           <option value="male">Masculino</option>
           <option value="female">Femenino</option>
@@ -29,19 +29,19 @@
       </div>
       <div class="form-group">
         <label>País</label>
-        <input v-model="country" type="text" required />
+        <input v-model="country" type="text" required class="input" />
       </div>
       <div class="form-group">
         <label>Número de Teléfono</label>
-        <input v-model="phoneNumber" type="tel" required />
+        <input v-model="phoneNumber" type="tel" required class="input" />
       </div>
       <div class="form-group">
         <label>Contraseña</label>
-        <input v-model="password" type="password" required />
+        <input v-model="password" type="password" required class="input" />
       </div>
       <div class="form-group">
         <label>Confirmar Contraseña</label>
-        <input v-model="confirmPassword" type="password" required />
+        <input v-model="confirmPassword" type="password" required class="input" />
       </div>
       <button type="submit" class="btn">Guardar</button>
     </form>
@@ -123,60 +123,79 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 400px;
+  max-width: 480px;
   margin: auto;
   padding: 20px;
-  text-align: center;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
+
 .title {
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: bold;
   color: #333;
+  margin-bottom: 20px;
 }
+
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   text-align: left;
 }
+
 .form-group label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 8px;
   color: #555;
 }
+
 .input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px;
   font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
 }
+
+.input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
 .readonly-input {
-  background: #f3f3f3;
+  background-color: #f3f3f3;
   cursor: not-allowed;
 }
+
 .btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
+  color: white;
+  font-size: 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
   transition: background-color 0.3s ease;
 }
+
 .btn:hover {
   background-color: #0056b3;
 }
+
 .error {
   color: red;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-size: 14px;
 }
+
 .success {
   color: green;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-size: 14px;
 }
 </style>
