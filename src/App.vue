@@ -12,8 +12,24 @@
             <v-btn text to="/competitions">Competitions</v-btn>
             <v-btn text to="/rooms">Rooms</v-btn>
             <v-btn text to="/rankings">Rankings</v-btn>
-            <v-btn v-if="!isLoggedIn" text @click="goToAuthPage">Login / Register</v-btn>
-            <v-btn v-else text>{{ userName }}</v-btn>
+
+            <!-- Si NO está logueado, muestra Login / Register -->
+            <v-btn v-if="!isAuthenticated" text @click="goToAuthPage">Login / Register</v-btn>
+
+            <!-- Si está logueado, muestra su nombre con menú desplegable -->
+            <v-menu v-else offset-y>
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" text>{{ userName || "Mi Perfil" }}</v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="goToProfile">
+                  <v-list-item-title>Ver Perfil</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="logout">
+                  <v-list-item-title>Cerrar Sesión</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
         </v-row>
       </v-container>
@@ -40,6 +56,7 @@
       </v-container>
     </v-footer>
 
+    <!-- Modal para mostrar información de Cookies, Protección de Datos y Privacidad -->
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title class="headline">{{ modalTitle }}</v-card-title>
@@ -54,64 +71,71 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import logo from '@/assets/logo.png'
+import { mapState } from "vuex";
+import logo from "@/assets/logo.png";
+
 export default {
-  name: 'App',
+  name: "App",
   data() {
     return {
       logo,
       dialog: false,
       modalType: null
-    }
+    };
   },
   computed: {
     ...mapState({
-      isLoggedIn: state => state.isLoggedIn,
-      userName: state => state.userName
+      isAuthenticated: (state) => !!state.user, // Verifica si el usuario está autenticado
+      userName: (state) => state.user?.first_name || "Mi Perfil"
     }),
     modalTitle() {
       switch (this.modalType) {
-        case 'cookies':
-          return 'Cookies'
-        case 'dataProtection':
-          return 'Protección de Datos'
-        case 'privacy':
-          return 'Política de Privacidad'
+        case "cookies":
+          return "Cookies";
+        case "dataProtection":
+          return "Protección de Datos";
+        case "privacy":
+          return "Política de Privacidad";
         default:
-          return ''
+          return "";
       }
     },
     modalContent() {
       switch (this.modalType) {
-        case 'cookies':
-          return 'Información detallada sobre el uso de cookies en nuestro sitio.'
-        case 'dataProtection':
-          return 'Información detallada sobre cómo protegemos tus datos.'
-        case 'privacy':
-          return 'Información detallada sobre nuestra política de privacidad.'
+        case "cookies":
+          return "Información detallada sobre el uso de cookies en nuestro sitio.";
+        case "dataProtection":
+          return "Información detallada sobre cómo protegemos tus datos.";
+        case "privacy":
+          return "Información detallada sobre nuestra política de privacidad.";
         default:
-          return ''
+          return "No se encontró información.";
       }
     }
   },
   methods: {
     goToAuthPage() {
-      this.$router.push('/auth')
+      this.$router.push("/auth");
+    },
+    goToProfile() {
+      this.$router.push("/edit-profile");
+    },
+    logout() {
+      this.$store.dispatch("logout");
+      this.$router.push("/");
     },
     openModal(type) {
-      this.modalType = type
-      this.dialog = true
+      this.modalType = type;
+      this.dialog = true;
     }
+  },
+  async created() {
+    await this.$store.dispatch("fetchUser"); // Asegura que el usuario se cargue correctamente
   }
-}
+};
 </script>
 
 <style scoped>
-#app {
-  font-family: 'Arial', sans-serif;
-  color: #2c3e50;
-}
 .footer-links a {
   color: white;
   margin: 0 10px;

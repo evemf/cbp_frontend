@@ -6,8 +6,9 @@ const apiUrl = process.env.VUE_APP_API_URL;
 const api = axios.create({
   baseURL:  apiUrl, 
   headers: {
-    "Content-Type": "application/json",  // Indicamos que las solicitudes son JSON
+    "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Interceptor para agregar el token JWT a las solicitudes protegidas

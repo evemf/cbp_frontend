@@ -18,8 +18,16 @@ app.use(vuetify);
 app.use(router);
 app.use(store);
 
-router.beforeEach((to, from, next) => {
+// Esperar a que fetchUser termine ANTES de montar la app
+store.dispatch("fetchUser").finally(() => {
+  app.mount("#app");
+});
+
+// Manejar autenticación en las rutas protegidas
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
+    await store.dispatch("fetchUser"); // Esperamos la carga del usuario
+
     if (!store.getters.isAuthenticated) {
       next({ name: "Auth" });
     } else {
@@ -29,5 +37,3 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-app.mount('#app');
