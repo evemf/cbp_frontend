@@ -19,7 +19,7 @@ const store = createStore({
     async register(_, email) {
       if (typeof email !== "string") {
         console.error("Error: email debe ser un string, recibió:", email);
-        alert("Invalid email format!");
+        alert("Formato de correo no válido");
         return;
       }
       try {
@@ -27,11 +27,11 @@ const store = createStore({
         const response = await api.post('/auth/register', { email: email.trim() });
 
         if (response.status === 200) {
-          alert("We have sent a validation email. Please check your inbox.");
+          alert("Hemos enviado un correo de verificación. Por favor, revisa tu bandeja de entrada.");
         }
       } catch (error) {
-        console.error("Registration failed:", error);
-        alert(error.response?.data?.detail || "Registration failed, please try again!");
+        console.error("Error en el registro:", error);
+        alert(error.response?.data?.detail || "Error en el registro, intenta de nuevo.");
       }
     },
     
@@ -39,12 +39,12 @@ const store = createStore({
     async completeProfile(_, profileData) {
       try {
         const response = await api.put('/users/complete-profile', profileData, {
-          withCredentials: true,
+          withCredentials: true, // Asegurarse de que se envíen las cookies
         });
 
         if (response.status === 200) {
           alert('¡Tu perfil ha sido completado exitosamente!');
-          router.push({ name: 'Auth' });
+          router.push({ name: 'Auth' }); // Redirigir a la página de autenticación
         }
       } catch (error) {
         console.error('Error al completar perfil:', error);
@@ -55,13 +55,13 @@ const store = createStore({
     // 🚀 Obtener usuario autenticado desde el backend
     async fetchUser({ commit }) {
       try {
-        const response = await api.get("/auth/me", { withCredentials: true });
+        const response = await api.get("/auth/me", { withCredentials: true }); // Asegurarse de enviar las cookies
         commit("setUser", response.data);
         return response.data;
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Error obteniendo el usuario:", error);
         console.warn("El usuario no está autenticado o la sesión expiró.");
-        commit("setUser", null);
+        commit("setUser", null); // Eliminar el usuario del estado en caso de error
         return null;
       }
     },
@@ -69,13 +69,13 @@ const store = createStore({
     // 🚀 Iniciar sesión
     async login({ commit }, credentials) {
       try {
-        const response = await api.post("/auth/login", credentials, { withCredentials: true });
-        const { user, redirect_url } = response.data; // Recibimos el usuario del backend
+        const response = await api.post("/auth/login", credentials, { withCredentials: true }); // Enviar cookies
+        const { user, redirect_url } = response.data; // Recibimos el usuario y la URL de redirección
   
-        commit("setUser", user);
-        window.location.href = redirect_url;
+        commit("setUser", user); // Establecer el usuario en el estado
+        window.location.href = redirect_url; // Redirigir a la URL correspondiente
       } catch (error) {
-        alert(error.response?.data?.detail || "Invalid email or password!");
+        alert(error.response?.data?.detail || "Correo o contraseña incorrectos.");
       }
     },
 
@@ -83,10 +83,10 @@ const store = createStore({
     async updateUserProfile({ commit }, userData) {
       try {
         const response = await api.put("/users/profile", userData, { withCredentials: true });
-        commit("setUser", response.data);
+        commit("setUser", response.data); // Actualizar el usuario en el estado
         alert("Perfil actualizado con éxito!");
       } catch (error) {
-        alert("Error al actualizar perfil.");
+        alert("Error al actualizar el perfil.");
       }
     },
 
@@ -94,16 +94,16 @@ const store = createStore({
     async logout({ commit }) {
       try {
         await api.post("/auth/logout", {}, { withCredentials: true }); // Llamamos al backend para cerrar sesión
-        commit("logout");
-        router.push({ name: "Auth" });
+        commit("logout"); // Limpiar el estado del usuario
+        router.push({ name: "Auth" }); // Redirigir a la página de autenticación
       } catch (error) {
         console.error("Error al cerrar sesión:", error);
       }
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.user,
-    getUser: (state) => state.user,
+    isAuthenticated: (state) => !!state.user, // Devuelve si el usuario está autenticado
+    getUser: (state) => state.user, // Obtener los datos del usuario
   }
 });
 

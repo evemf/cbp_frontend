@@ -7,9 +7,12 @@ import AuthPage from "../views/AuthPage.vue";
 import RankingPage from "../views/RankingPage.vue";
 import CompetitionPage from "../views/CompetitionPage.vue"; 
 import ReservationPage from "../views/ReservationPage.vue"; 
-import DashboardPage from "../views/DashboardPage.vue";
+import AdminDashboard from '@/views/AdminDashboard.vue';
+import UserDashboard from '@/views/UserDashboard.vue';
 import RoomsPage from "../views/RoomsPage.vue"; 
 import EditProfile from "../views/EditProfile.vue";  
+import CreateCompetition from "../views/CreateCompetition.vue"; 
+import EditCompetition from "../views/EditCompetition.vue";   
 
 const routes = [
   {
@@ -43,10 +46,28 @@ const routes = [
     component: ReservationPage,
   },
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    meta: { requiresAuth: true },
-    component: DashboardPage,
+    path: '/dashboard',
+    name: 'UserDashboard',
+    component: UserDashboard,
+    meta: { requiresAuth: true, role: 'user' },
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: { requiresAuth: true, role: 'admin' },
+  },
+  {
+    path: "/create-competition",
+    name: "CreateCompetition",
+    component: CreateCompetition,
+    meta: { requiresAuth: true, role: 'admin' },
+  },
+  {
+    path: "/edit-competition",
+    name: "EditCompetition",
+    component: EditCompetition,
+    meta: { requiresAuth: true, role: 'admin' },
   },
   {
     path: "/edit-profile", 
@@ -55,10 +76,9 @@ const routes = [
     component: EditProfile,
   },
   {
-    path: "/auth/verify/:token",
+    path: "/auth/verify",
     name: "verify-email",
     component: VerifyEmail,
-    props: true,
   },
   { 
     path: "/complete-profile",
@@ -76,17 +96,29 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     try {
-      // Si el usuario no está en el store, intenta obtenerlo desde el backend
+      // Intentar obtener el usuario si no está en el store
       if (!store.state.user) {
+        console.log("No hay usuario en el store, intentando fetchUser...");
         await store.dispatch("fetchUser");
       }
 
-      // Si después de intentar no hay usuario, redirigir a auth
-      if (!store.getters.isAuthenticated) {
+      // Si no hay usuario autenticado después del fetch, redirigir a auth
+      if (!store.state.user) {
+        console.warn("No se pudo obtener el usuario autenticado, redirigiendo a /auth");
         return next("/auth");
       }
+
+      const userRole = store.state.user.role;
+      console.log("Rol del usuario autenticado:", userRole);
+
+      // Si la ruta requiere un rol específico y no coincide con el del usuario
+      if (to.meta.role && to.meta.role !== userRole) {
+        console.log("Rol no autorizado. Redirigiendo...");
+        return next(userRole === "admin" ? "/admin" : "/dashboard");
+      }
+
     } catch (error) {
-      console.error("Error verificando autenticación:", error);
+      console.error("Error en la verificación de autenticación:", error);
       return next("/auth");
     }
   }
